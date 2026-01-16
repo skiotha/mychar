@@ -13,11 +13,15 @@
     "type": "git",
     "url": "git+https://github.com/skiotha/mychar.git"
   },
+  "imports": {
+    "#config": "./config/constants.mjs"
+  },
   "license": "MIT",
   "author": "rye",
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "node --env-file-if-exists=mychar.dev.env watcher.js",
+    "start:debug": "node --inspect watcher.js"
   }
 }
