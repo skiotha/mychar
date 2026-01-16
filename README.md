@@ -1,2 +1,3 @@
 # mychar
-Legends begin here
+
+Legends are born here
