@@ -14,14 +14,16 @@
     "url": "git+https://github.com/skiotha/mychar.git"
   },
   "imports": {
-    "#config": "./config/constants.mjs"
+    "#config": "./src/lib/session.mjs",
+    "#paths": "./src/config/paths.mjs",
+    "#app": "./src/app.mjs"
   },
   "license": "MIT",
   "author": "rye",
   "type": "module",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
-    "start:dev": "node --env-file-if-exists=mychar.dev.env watcher.js",
-    "start:debug": "node --inspect watcher.js"
+    "start:dev": "node --env-file-if-exists=mychar.dev.env watcher.mjs",
+    "start:debug": "node --inspect watcher.mjs"
   }
 }
