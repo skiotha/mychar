@@ -1,0 +1,23 @@
+{
+  "name": "mychar",
+  "version": "0.0.1",
+  "description": "Legends begin here",
+  "keywords": [
+    "mychar"
+  ],
+  "homepage": "https://github.com/skiotha/mychar#readme",
+  "bugs": {
+    "url": "https://github.com/skiotha/mychar/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skiotha/mychar.git"
+  },
+  "license": "MIT",
+  "author": "rye",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
