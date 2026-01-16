@@ -16,7 +16,9 @@
   "imports": {
     "#config": "./src/lib/session.mjs",
     "#paths": "./src/config/paths.mjs",
-    "#app": "./src/app.mjs"
+    "#app": "./src/app.mjs",
+    "#router": "./src/routes/index.mjs",
+    "#middleware": "./src/middleware/index.mjs"
   },
   "license": "MIT",
   "author": "rye",
