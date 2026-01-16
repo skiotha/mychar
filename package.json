@@ -15,9 +15,9 @@
   },
   "imports": {
     "#config": "./src/lib/session.mjs",
-    "#paths": "./src/config/paths.mjs",
+    "#paths": "./config/paths.mjs",
     "#app": "./src/app.mjs",
-    "#router": "./src/routes/index.mjs",
+    "#router": "./src/routers/index.mjs",
     "#middleware": "./src/middleware/index.mjs"
   },
   "license": "MIT",
@@ -25,7 +25,7 @@
   "type": "module",
   "main": "server.mjs",
   "scripts": {
-    "start:dev": "node --env-file-if-exists=mychar.dev.env watcher.mjs",
+    "start:dev": "node --env-file-if-exists=config/mychar.development.env scripts/watcher.mjs",
     "start:debug": "node --inspect watcher.mjs"
   }
 }

@@ -1,16 +1,15 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const PROJECT_ROOT =
-  process.env.NODE_ENV === "production"
-    ? process.env.SERVER_PATH
-    : join(process.cwd(), "src/server.mjs");
+const isProduction = process.env.NODE_ENV === "production";
+
+const PROJECT_ROOT = isProduction ? process.env.SERVER_PATH : process.cwd();
 
 export const PATHS = {
   PROJECT_ROOT,
   SSL: {
-    key: join(PROJECT_ROOT, process.env.SSL_KEY),
-    cert: join(PROJECT_ROOT, process.env.SSL_CERT),
+    key: isProduction && join(PROJECT_ROOT, process.env.SSL_KEY),
+    cert: isProduction && join(PROJECT_ROOT, process.env.SSL_CERT),
   },
   PUBLIC: join(PROJECT_ROOT, "public"),
 };

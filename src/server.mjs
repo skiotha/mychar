@@ -1,7 +1,7 @@
 import https from "node:https";
 import http from "node:http";
 import createApp from "#app";
-import { serverParams } from "#config";
+import { default as serverParams } from "#config";
 import { SSL } from "#paths";
 
 const app = createApp();

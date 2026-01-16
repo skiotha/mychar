@@ -4,6 +4,6 @@ class Middleware {
   }
 }
 
-export function createMiddleware() {
+export function composeMiddleware() {
   return new Middleware();
 }
