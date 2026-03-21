@@ -66,6 +66,11 @@ function startApp() {
   const child = fork(SERVER_PATH);
 
   child.on("exit", (code, signal) => {
+    if (code === 0) {
+      console.log(`[${new Date().toISOString()}] App stopped.`);
+      return;
+    }
+
     console.error(
       `[${new Date().toISOString()}] App crashed! Code: ${code}, Signal: ${signal}`,
     );
