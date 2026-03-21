@@ -1,7 +1,6 @@
 *.env
 !*.example.env
 node_modules/
-mongodb-data/
 *.log
 .vscode
 .github/copilot-instructions.md
