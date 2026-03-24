@@ -1,16 +1,17 @@
 import https from "node:https";
 import http from "node:http";
 import createApp from "#app";
-import { default as serverParams } from "#config";
+import config from "#config";
 import { SSL } from "#paths";
 
 const app = createApp();
 const isProduction = process.env.NODE_ENV === "production";
 
-const server =
+const server: https.Server | http.Server =
   isProduction && SSL ? https.createServer(SSL, app) : http.createServer(app);
 
-const { host = "localhost", port = isProduction ? 443 : 3500 } = serverParams;
+const { host = "localhost", port = isProduction ? 443 : 3500 } =
+  config.serverParams;
 
 server.listen(port, host, () => {
   console.log(
@@ -19,7 +20,7 @@ server.listen(port, host, () => {
   console.log(`Environment: ${process.env.NODE_ENV}`);
 });
 
-function handleShutdown(signal) {
+function handleShutdown(signal: NodeJS.Signals | string): void {
   console.log(`\n${signal} received. Starting graceful shutdown...`);
 
   server.close((err) => {
@@ -40,8 +41,8 @@ function handleShutdown(signal) {
 }
 
 // signal handlers
-process.on("SIGTERM", handleShutdown);
-process.on("SIGINT", handleShutdown);
+process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+process.on("SIGINT", () => handleShutdown("SIGINT"));
 
 // error handlers
 process.on("uncaughtException", (error, origin) => {

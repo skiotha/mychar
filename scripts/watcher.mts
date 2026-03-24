@@ -1,16 +1,24 @@
-import { fork, spawn } from "node:child_process";
+import {
+  ChildProcess,
+  fork,
+  spawn,
+  type ChildProcessByStdio,
+} from "node:child_process";
 import { join } from "node:path";
 import { connect } from "node:net";
+import type { Readable } from "node:stream";
 import { PATHS } from "#paths";
 import config from "#config";
 
-const SERVER_PATH = join(PATHS.PROJECT_ROOT, "src", "server.mjs");
+const MONGO_TIMEOUT_MS = 10_000 as const;
+
+const SERVER_PATH = join(PATHS.PROJECT_ROOT, "src", "server.mts");
 
 console.log(`[${new Date().toISOString()}] Starting application watcher...`);
 
-let mongod = null;
+let mongod: ChildProcessByStdio<null, Readable, Readable> | null = null;
 
-function startMongo() {
+function startMongo(): Promise<void> {
   const { port, host, dbPath } = config.dbParams;
 
   if (!dbPath) {
@@ -25,12 +33,12 @@ function startMongo() {
       { stdio: ["ignore", "pipe", "pipe"] },
     );
 
-    mongod.stderr.on("data", (data) => {
+    mongod.stderr.on("data", (data: Buffer) => {
       const msg = data.toString();
       if (msg.includes("ERROR")) console.error(`[mongod] ${msg.trim()}`);
     });
 
-    mongod.stdout.on("data", (data) => {
+    mongod.stdout.on("data", (data: Buffer) => {
       const msg = data.toString().trim();
       if (msg.includes("ERROR")) {
         console.error(`[mongod] ${msg}`);
@@ -39,11 +47,11 @@ function startMongo() {
       }
     });
 
-    mongod.on("error", (err) => {
+    mongod.on("error", (err: Error) => {
       reject(err);
     });
 
-    mongod.on("exit", (code) => {
+    mongod.on("exit", (code: number | null, signal: NodeJS.Signals | null) => {
       if (code !== null && code !== 0) {
         console.error(
           `[${new Date().toISOString()}] MongoDB exited with code ${code}`,
@@ -62,8 +70,8 @@ function startMongo() {
   });
 }
 
-function startApp() {
-  const child = fork(SERVER_PATH);
+function startApp(): void {
+  const child: ChildProcess = fork(SERVER_PATH);
 
   child.on("exit", (code, signal) => {
     if (code === 0) {
@@ -80,29 +88,38 @@ function startApp() {
   });
 }
 
-function shutdown() {
-  if (mongod) {
-    console.log(`[${new Date().toISOString()}] Stopping MongoDB...`);
-    mongod.kill("SIGTERM");
+function shutdown(): void {
+  const proc = mongod;
 
-    mongod.on("exit", () => {
-      console.log(`[${new Date().toISOString()}] MongoDB stopped.`);
-      process.exit(0);
-    });
-
-    setTimeout(() => {
-      console.error("MongoDB shutdown timed out. Forcing exit.");
-      process.exit(1);
-    }, 10000);
-  } else {
+  if (!proc) {
+    console.log(
+      `[${new Date().toISOString()}] No MongoDB process to stop. Exiting...`,
+    );
     process.exit(0);
   }
+
+  console.log(`[${new Date().toISOString()}] Stopping MongoDB...`);
+  proc.kill("SIGTERM");
+
+  proc.on("exit", () => {
+    console.log(`[${new Date().toISOString()}] MongoDB stopped.`);
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    console.error("MongoDB shutdown timed out. Forcing exit.");
+    process.exit(1);
+  }, MONGO_TIMEOUT_MS);
 }
 
-function waitForMongo(host, port, timeout = 10000) {
+function waitForMongo(
+  host: string,
+  port: number,
+  timeout = MONGO_TIMEOUT_MS,
+): Promise<void> {
   const start = Date.now();
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     function attempt() {
       const socket = connect(port, host);
       socket.on("connect", () => {

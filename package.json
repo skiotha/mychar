@@ -14,18 +14,25 @@
     "url": "git+https://github.com/skiotha/mychar.git"
   },
   "imports": {
-    "#config": "./src/lib/session.mjs",
-    "#paths": "./config/paths.mjs",
-    "#app": "./src/app.mjs",
-    "#router": "./src/routers/index.mjs",
-    "#middleware": "./src/middleware/index.mjs"
+    "#config": "./src/lib/session.mts",
+    "#paths": "./config/paths.mts",
+    "#app": "./src/app.mts",
+    "#router": "./src/routers/index.mts",
+    "#middleware": "./src/middleware/index.mts",
+    "#http": "./src/lib/http-types.mts"
   },
   "license": "MIT",
   "author": "rye",
   "type": "module",
-  "main": "server.mjs",
   "scripts": {
-    "start:dev": "node --env-file-if-exists=config/mychar.development.env scripts/watcher.mjs",
-    "start:debug": "node --inspect watcher.mjs"
+    "start:dev": "node --env-file-if-exists=config/mychar.development.env scripts/watcher.mts",
+    "start:debug": "node --inspect scripts/watcher.mts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
   }
 }
