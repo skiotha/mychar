@@ -7,8 +7,8 @@ export default function createApp() {
   const router = createRouter();
 
   return async function app(req: Request, res: Response): Promise<void> {
-    // TODO: integrate middleware and router
-    // await middleware.handle(req, res);
-    // await router.handle(req, res);
+    await middleware.handle(req, res, async () => {
+      await router.handle(req, res);
+    });
   };
 }

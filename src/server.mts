@@ -3,6 +3,7 @@ import http from "node:http";
 import createApp from "#app";
 import config from "#config";
 import { SSL } from "#paths";
+import { connect, disconnect } from "./models/db.mts";
 
 const app = createApp();
 const isProduction = process.env.NODE_ENV === "production";
@@ -13,12 +14,19 @@ const server: https.Server | http.Server =
 const { host = "localhost", port = isProduction ? 443 : 3500 } =
   config.serverParams;
 
-server.listen(port, host, () => {
-  console.log(
-    `Server listening on ${isProduction ? "https" : "http"}://${host}:${port}`,
-  );
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-});
+connect()
+  .then(() => {
+    server.listen(port, host, () => {
+      console.log(
+        `Server listening on ${isProduction ? "https" : "http"}://${host}:${port}`,
+      );
+      console.log(`Environment: ${process.env.NODE_ENV}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });
 
 function handleShutdown(signal: NodeJS.Signals | string): void {
   console.log(`\n${signal} received. Starting graceful shutdown...`);
@@ -29,9 +37,11 @@ function handleShutdown(signal: NodeJS.Signals | string): void {
       process.exit(1);
     }
 
-    console.log("Server closed. Exiting process.");
-    // @TODO: db disconnect
-    process.exit(0);
+    console.log("Server closed.");
+    disconnect().then(() => {
+      console.log("Database disconnected. Exiting process.");
+      process.exit(0);
+    });
   });
 
   setTimeout(() => {
