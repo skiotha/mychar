@@ -1,8 +1,8 @@
 import { MongoClient, type Db, type IndexDescription } from "mongodb";
 import config from "#config";
-import { userValidator, userIndexes } from "./User.mjs";
-import { commentIndexes, commentValidator } from "./Comment.mjs";
-import { characterIndexes, characterValidator } from "./Character.mjs";
+import { userValidator, userIndexes } from "./User.mts";
+import { commentIndexes, commentValidator } from "./Comment.mts";
+import { characterIndexes, characterValidator } from "./Character.mts";
 
 const { host, port, dbName } = config.dbParams;
 const MONGO_URI = `mongodb://${host}:${port}`;
@@ -10,7 +10,6 @@ const MONGO_URI = `mongodb://${host}:${port}`;
 let client: MongoClient | null = null;
 let db: Db | null = null;
 
-/** Connect and return the database handle. Reuses existing connection. */
 export async function connect(): Promise<Db> {
   if (db) return db;
 
@@ -22,7 +21,6 @@ export async function connect(): Promise<Db> {
   return db;
 }
 
-/** Graceful shutdown. */
 export async function disconnect(): Promise<void> {
   await client?.close();
   client = null;
