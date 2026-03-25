@@ -10,14 +10,18 @@ const MONGO_URI = `mongodb://${host}:${port}`;
 let client: MongoClient | null = null;
 let db: Db | null = null;
 
-export async function connect(): Promise<Db> {
-  if (db) return db;
+export async function connect(): Promise<void> {
+  if (db) return;
 
   client = new MongoClient(MONGO_URI);
   await client.connect();
   db = client.db(dbName);
 
   await ensureCollections(db);
+}
+
+export function getDb(): Db {
+  if (!db) throw new Error("Database not connected. Call connect() first.");
   return db;
 }
 
